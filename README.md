@@ -10,7 +10,7 @@
 
 But when use small model, In my test, `Multi image` and `Video` probability invalid(wait more complete test).
 
-![Qwen2.5-VL](example_workflows\ComfyUI-Qwen2_5-VL.jpg)
+![Qwen2.5-VL](example_workflows/ComfyUI-Qwen2_5-VL.jpg)
 
 ## Installation:
 

@@ -10,6 +10,6 @@ Repository = "https://github.com/MakkiShizu/ComfyUI-Qwen2_5-VL"
 #  Used by Comfy Registry https://comfyregistry.org
 
 [tool.comfy]
-PublisherId = ""
+PublisherId = "makki-shizu"
 DisplayName = "ComfyUI-Qwen2_5-VL"
 Icon = "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen2.5-VL/qwen2.5vl_logo.png"

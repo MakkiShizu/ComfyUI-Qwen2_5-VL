@@ -89,6 +89,7 @@ class Qwen2_5_VL_Run:
             "optional": {
                 "image": ("IMAGE",),
                 "video": ("VIDEO",),
+                "BatchImage": ("BatchImage",),
             },
             "required": {
                 "text": ("STRING", {"default": "", "multiline": True}),
@@ -146,6 +147,7 @@ class Qwen2_5_VL_Run:
         seed,
         image=None,
         video=None,
+        BatchImage=None,
     ):
         min_pixels = min_pixels * 28 * 28
         max_pixels = max_pixels * 28 * 28
@@ -214,7 +216,29 @@ class Qwen2_5_VL_Run:
             # test
             # print(f"method:video")
             # print(f"messages:{messages}")
-        elif video is None and image is None:
+        elif BatchImage is not None:
+            image_paths = BatchImage
+            content = []
+            for path in image_paths:
+                content.append(
+                    {
+                        "type": "image",
+                        "image": path,
+                        "min_pixels": min_pixels,
+                        "max_pixels": max_pixels,
+                    }
+                )
+            content.append(
+                {
+                    "type": "text",
+                    "text": text,
+                }
+            )
+            messages = [{"role": "user", "content": content}]
+            # test
+            # print(f"method:BatchImage")
+            # print(f"messages:{messages}")
+        elif video is None and image is None and BatchImage is None:
             messages = [
                 {
                     "role": "user",
@@ -255,9 +279,32 @@ class Qwen2_5_VL_Run:
             skip_special_tokens=True,
             clean_up_tokenization_spaces=False,
         )
-        delete_temp_image(seed)
-        delete_temp_video(seed)
+        # delete_temp_image(seed)
+        # delete_temp_video(seed)
         return (output_text,)
+
+
+class BatchImageLoaderToLocalFiles:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {}}
+
+    RETURN_TYPES = ("BatchImage",)
+    RETURN_NAMES = ("BatchImage",)
+    FUNCTION = "BatchImageLoaderToLocalFiles"
+    CATEGORY = "Qwen2_5-VL"
+
+    def BatchImageLoaderToLocalFiles(self, **kwargs):
+        images = list(kwargs.values())
+        image_paths = []
+        for idx, image in enumerate(images):
+            image_path = Path(folder_paths.temp_directory) / f"temp_image_{idx}.png"
+            img = Image.fromarray(
+                np.clip(255.0 * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
+            )
+            img.save(os.path.join(image_path))
+            image_paths.append(f"file://{image_path.resolve().as_posix()}")
+        return (image_paths,)
 
 
 def temp_video(video: VideoInput, seed):
@@ -271,10 +318,10 @@ def temp_video(video: VideoInput, seed):
     return uri
 
 
-def delete_temp_video(seed):
-    video_path = Path(folder_paths.temp_directory) / f"temp_video_{seed}.mp4"
-    if video_path.exists():
-        video_path.unlink()
+# def delete_temp_video(seed):
+#     video_path = Path(folder_paths.temp_directory) / f"temp_video_{seed}.mp4"
+#     if video_path.exists():
+#         video_path.unlink()
 
 
 def temp_image(image, seed):
@@ -304,22 +351,24 @@ def temp_batch_image(image, num_counts, seed):
     return image_paths
 
 
-def delete_temp_image(seed):
-    image_path = Path(folder_paths.temp_directory) / f"temp_image_{seed}.png"
-    multiple_image_path = Path(folder_paths.temp_directory) / "Multiple"
-    if image_path.exists():
-        image_path.unlink()
-    try:
-        shutil.rmtree(multiple_image_path)
-    except FileNotFoundError:
-        pass
+# def delete_temp_image(seed):
+#     image_path = Path(folder_paths.temp_directory) / f"temp_image_{seed}.png"
+#     multiple_image_path = Path(folder_paths.temp_directory) / "Multiple"
+#     if image_path.exists():
+#         image_path.unlink()
+#     try:
+#         shutil.rmtree(multiple_image_path)
+#     except FileNotFoundError:
+#         pass
 
 
 NODE_CLASS_MAPPINGS = {
     "DownloadAndLoadQwen2_5_VLModel": DownloadAndLoadQwen2_5_VLModel,
     "Qwen2_5_VL_Run": Qwen2_5_VL_Run,
+    "BatchImageLoaderToLocalFiles": BatchImageLoaderToLocalFiles,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "DownloadAndLoadQwen2_5_VLModel": "DownloadAndLoadQwen2_5_VLModel",
     "Qwen2_5_VL_Run": "Qwen2_5_VL_Run",
+    "BatchImageLoaderToLocalFiles": "BatchImageLoaderToLocalFiles",
 }

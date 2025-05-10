@@ -6,11 +6,24 @@
 
 I have reviewed the existing comfyui-Qwen2.5-VL that are similar to this repo, and it seems that they do not provide native video input. The input method of `video_path` makes it unfriendly for some workflows, so I have written this repo.
 
+Supports Type:
+
+- Image
+- Multi image
+- Video
+- Text Only
+
 **most diff: Native Video input support, not PATH**
 
 Sometimes when using too small a model or quantization, the model may speak nonsense, but in most cases it is normal. Please refer to the following example image:
 
 ![Qwen2.5-VL](example_workflows/ComfyUI-Qwen2_5-VL.jpg)
+
+**About Multi image:**
+
+You can use any number of images to connect to the `BatchImageLoaderToLocalFiles` node for inference, or you can upload an animated type image (i.e. multiple batches of images like in the above example image).
+
+![Qwen2.5-VL](example_workflows/BatchImage.jpg)
 
 ## Installation:
 
@@ -41,6 +54,7 @@ node name：
 
 - Qwen2_5-VL/DownloadAndLoadQwen2_5_VLModel
 - Qwen2_5-VL/Qwen2_5_VL_Run
+- Qwen2_5-VL/BatchImageLoaderToLocalFiles
 
 <details>
 <summary>Minimum VRAM requirements</summary>

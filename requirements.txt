@@ -1,0 +1,4 @@
+qwen-vl-utils
+qwen-vl-utils[decord]
+pathlib
+transformers>=4.49.0

@@ -1,0 +1,15 @@
+[project]
+name = "qwen2_5-vl"
+description = "Qwen2.5-VL in ComfyUI"
+version = "1.0.0"
+license = {file = "LICENSE"}
+dependencies = ["qwen-vl-utils", "qwen-vl-utils[decord]", "pathlib", "transformers>=4.49.0"]
+
+[project.urls]
+Repository = "https://github.com/MakkiShizu/ComfyUI-Qwen2_5-VL"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "ComfyUI-Qwen2_5-VL"
+Icon = "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen2.5-VL/qwen2.5vl_logo.png"

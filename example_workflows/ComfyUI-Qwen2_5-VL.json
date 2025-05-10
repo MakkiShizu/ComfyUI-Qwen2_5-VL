@@ -1,8 +1,8 @@
 {
   "id": "4372a85a-fdb5-4c9f-8211-28991eeac890",
   "revision": 0,
-  "last_node_id": 24,
-  "last_link_id": 24,
+  "last_node_id": 25,
+  "last_link_id": 25,
   "nodes": [
     {
       "id": 10,
@@ -16,7 +16,7 @@
         296
       ],
       "flags": {},
-      "order": 8,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -58,7 +58,7 @@
         256,
         1280,
         20480,
-        286220037524126,
+        85956975621859,
         "randomize"
       ]
     },
@@ -74,7 +74,7 @@
         106
       ],
       "flags": {},
-      "order": 4,
+      "order": 3,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -94,8 +94,8 @@
         "Node name for S&R": "DownloadAndLoadQwen2_5_VLModel"
       },
       "widgets_values": [
-        "Qwen/Qwen2.5-VL-7B-Instruct",
-        "4bit",
+        "Qwen/Qwen2.5-VL-3B-Instruct",
+        "8bit",
         "sdpa"
       ]
     },
@@ -111,7 +111,7 @@
         296
       ],
       "flags": {},
-      "order": 11,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -153,7 +153,7 @@
         256,
         1280,
         20480,
-        185821743439347,
+        654316415851232,
         "randomize"
       ]
     },
@@ -169,7 +169,7 @@
         296
       ],
       "flags": {},
-      "order": 9,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -211,7 +211,7 @@
         256,
         1280,
         20480,
-        509549564165190,
+        462232155759236,
         "randomize"
       ]
     },
@@ -227,7 +227,7 @@
         314
       ],
       "flags": {},
-      "order": 1,
+      "order": 0,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -267,7 +267,7 @@
         314
       ],
       "flags": {},
-      "order": 2,
+      "order": 1,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -306,7 +306,7 @@
         66
       ],
       "flags": {},
-      "order": 7,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -333,44 +333,16 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            16,
-            17
+            17,
+            25
           ]
         }
       ],
       "properties": {
         "Node name for S&R": "ImageCountConcatenate"
       },
+      "widgets_values": [],
       "_dynamicInputs": []
-    },
-    {
-      "id": 17,
-      "type": "PreviewImage",
-      "pos": [
-        300,
-        30
-      ],
-      "size": [
-        140,
-        246
-      ],
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 16
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.33",
-        "Node name for S&R": "PreviewImage"
-      },
-      "widgets_values": []
     },
     {
       "id": 18,
@@ -384,7 +356,7 @@
         447.23529052734375
       ],
       "flags": {},
-      "order": 3,
+      "order": 4,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -402,7 +374,7 @@
         "Node name for S&R": "LoadVideo"
       },
       "widgets_values": [
-        "FramePack_00001.mp4",
+        "WAN_00007 (1).mp4",
         "image"
       ]
     },
@@ -410,15 +382,15 @@
       "id": 19,
       "type": "VHS_LoadVideo",
       "pos": [
-        1310,
-        170
+        1300,
+        230
       ],
       "size": [
         247.455078125,
-        638.6295166015625
+        731.81591796875
       ],
       "flags": {},
-      "order": 0,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -464,7 +436,7 @@
         "Node name for S&R": "VHS_LoadVideo"
       },
       "widgets_values": {
-        "video": "FramePack_00001.mp4",
+        "video": "WAN_00007 (1).mp4",
         "force_rate": 0,
         "custom_width": 0,
         "custom_height": 0,
@@ -477,7 +449,7 @@
           "hidden": false,
           "paused": false,
           "params": {
-            "filename": "FramePack_00001.mp4",
+            "filename": "WAN_00007 (1).mp4",
             "type": "input",
             "format": "video/mp4",
             "force_rate": 0,
@@ -502,7 +474,7 @@
         78
       ],
       "flags": {},
-      "order": 6,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -541,8 +513,8 @@
         -270
       ],
       "size": [
-        210,
-        170
+        300,
+        270
       ],
       "flags": {},
       "order": 12,
@@ -568,7 +540,7 @@
         "Node name for S&R": "ShowText|pysssss"
       },
       "widgets_values": [
-        "这是一张动漫风格的插画，描绘了一位身穿华丽服饰的角色。角色有着长长的粉色头发，穿着紫色和白色的服装，带有金色的装饰。她的服装设计非常复杂，包括长袖、短裙和高筒靴。背景中有几块漂浮的粉色宝石，增添了画面的梦幻感。整体色调以紫色和粉色为主，给人一种高贵和神秘的感觉。"
+        "这是一张动漫风格的插画，描绘了一位长发女性角色。她有着粉色的头发和紫色的眼睛，穿着一件带有金色装饰的白色和紫色相间的服装。她的服装设计非常华丽，包括长袖、短裤和高筒靴，整体色调以紫色和白色为主。\n\n背景中有一些悬浮的紫色晶体，增加了画面的梦幻感。她的姿态优雅，似乎在空中飞翔或舞动，给人一种轻盈和自由的感觉。整体画面色彩鲜艳，细节丰富，充满了幻想元素。"
       ]
     },
     {
@@ -579,8 +551,8 @@
         130
       ],
       "size": [
-        210,
-        170
+        300,
+        270
       ],
       "flags": {},
       "order": 14,
@@ -606,7 +578,7 @@
         "Node name for S&R": "ShowText|pysssss"
       },
       "widgets_values": [
-        "这两张图片展示了同一个角色的不同背景设置。以下是对两张图片的对比分析：\n\n1. **第一张图片**：\n   - 背景是纯白色的，给人一种简洁和突出角色本身的感觉。\n   - 粉色的宝石碎片飘散在角色周围，增加了梦幻和神秘的氛围。\n\n2. **第二张图片**：\n   - 背景是星空，星星点点，颜色以深蓝和紫色为主，营造出一种宇宙或夜空的场景。\n   - 同样有粉色的宝石碎片飘散，但整体色调更偏向深邃和神秘。\n\n"
+        "这两张图片展示了同一角色在不同背景下的场景。以下是它们的对比：\n\n1. **第一张图片**：\n   - 背景是纯白色的，角色周围有几块粉色的宝石状物体。\n   - 角色穿着紫色和白色的服装，头发是粉红色的。\n   - 整体色调较为柔和，给人一种梦幻的感觉。\n\n2. **第二张图片**：\n   - 背景变为深蓝色，带有星星点缀，增加了神秘感。\n   - 粉色宝石状物体仍然存在，但数量减少了一些。\n   - 角色的服装和姿态"
       ]
     },
     {
@@ -617,8 +589,8 @@
         530
       ],
       "size": [
-        210,
-        170
+        300,
+        270
       ],
       "flags": {},
       "order": 13,
@@ -644,7 +616,7 @@
         "Node name for S&R": "ShowText|pysssss"
       },
       "widgets_values": [
-        "这是一幅静态的插画，描绘了一位长发女性角色。她有着金色的眼睛和白色的头发，穿着黑色的内衣。她的姿势是侧身，右手抬起，似乎在整理头发。背景中有飘落的花瓣，整体画面给人一种柔美和梦幻的感觉。画风细腻，色彩柔和，主要以白色和粉色为主调。"
+        "这段视频展示了一位穿着传统和服的女性角色。她的头发是银蓝色的，头上戴着装饰有花朵的发饰，显得非常精致。她的眼睛大而明亮，面带微笑，给人一种温柔和优雅的感觉。\n\n她的和服主要是浅蓝色，上面有精美的花卉图案，袖口处也有类似的花纹。她的鞋子也是深色的，与和服形成了鲜明的对比。背景中充满了粉色的樱花花瓣，营造出一种浪漫和梦幻的氛围。\n\n整个画面色彩柔和，光线柔和，给人一种宁静和美好的感觉。视频通过细腻的细节和色彩搭配，展现了角色的"
       ]
     },
     {
@@ -655,11 +627,11 @@
         -70
       ],
       "size": [
-        140,
-        60
+        210,
+        88
       ],
       "flags": {},
-      "order": 5,
+      "order": 2,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -669,6 +641,35 @@
       ],
       "color": "#432",
       "bgcolor": "#653"
+    },
+    {
+      "id": 25,
+      "type": "PreviewImage",
+      "pos": [
+        100,
+        -70
+      ],
+      "size": [
+        300,
+        246
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 25
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.33",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
     }
   ],
   "links": [
@@ -721,14 +722,6 @@
       "IMAGE"
     ],
     [
-      16,
-      16,
-      0,
-      17,
-      0,
-      "IMAGE"
-    ],
-    [
       17,
       16,
       0,
@@ -775,6 +768,14 @@
       23,
       0,
       "STRING"
+    ],
+    [
+      25,
+      16,
+      0,
+      25,
+      0,
+      "IMAGE"
     ]
   ],
   "groups": [],

@@ -25,6 +25,10 @@ You can use any number of images to connect to the `BatchImageLoaderToLocalFiles
 
 ![Qwen2.5-VL](example_workflows/BatchImage.jpg)
 
+Or you can freely add `image`, `video`, and `BatchImage` inputs, but this will cause the video to be parsed as an image (first frame), consistent with the test results on the [official website](https://chat.qwenlm.ai/).
+
+![Qwen2.5-VL](example_workflows/1-compressed.png)
+
 ## Installation:
 
 Clone this repository to 'ComfyUI/custom_nodes` folder.

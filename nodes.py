@@ -153,30 +153,21 @@ class Qwen2_5_VL_Run:
         max_pixels = max_pixels * 28 * 28
         total_pixels = total_pixels * 28 * 28
         processor = AutoProcessor.from_pretrained(Qwen2_5_VL_model["model_path"])
+        content = []
         if image is not None:
             num_counts = image.shape[0]
             if num_counts == 1:
                 uri = temp_image(image, seed)
-                messages = [
+                content.append(
                     {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "image",
-                                "image": uri,
-                                "min_pixels": min_pixels,
-                                "max_pixels": max_pixels,
-                            },
-                            {"type": "text", "text": text},
-                        ],
+                        "type": "image",
+                        "image": uri,
+                        "min_pixels": min_pixels,
+                        "max_pixels": max_pixels,
                     }
-                ]
-                # test
-                # print(f"method:{num_counts}")
-                # print(f"messages:{messages}")
+                )
             elif num_counts > 1:
                 image_paths = temp_batch_image(image, num_counts, seed)
-                content = []
                 for path in image_paths:
                     content.append(
                         {
@@ -186,39 +177,19 @@ class Qwen2_5_VL_Run:
                             "max_pixels": max_pixels,
                         }
                     )
-                content.append(
-                    {
-                        "type": "text",
-                        "text": text,
-                    }
-                )
-                messages = [{"role": "user", "content": content}]
-                # test
-                # print(f"method:{num_counts}")
-                # print(f"messages:{messages}")
-        elif video is not None:
+        if video is not None:
             uri = temp_video(video, seed)
-            messages = [
+            content.append(
                 {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "video",
-                            "video": uri,
-                            "min_pixels": min_pixels,
-                            "max_pixels": max_pixels,
-                            "total_pixels": total_pixels,
-                        },
-                        {"type": "text", "text": text},
-                    ],
+                    "type": "video",
+                    "video": uri,
+                    "min_pixels": min_pixels,
+                    "max_pixels": max_pixels,
+                    "total_pixels": total_pixels,
                 }
-            ]
-            # test
-            # print(f"method:video")
-            # print(f"messages:{messages}")
-        elif BatchImage is not None:
+            )
+        if BatchImage is not None:
             image_paths = BatchImage
-            content = []
             for path in image_paths:
                 content.append(
                     {
@@ -228,27 +199,9 @@ class Qwen2_5_VL_Run:
                         "max_pixels": max_pixels,
                     }
                 )
-            content.append(
-                {
-                    "type": "text",
-                    "text": text,
-                }
-            )
-            messages = [{"role": "user", "content": content}]
-            # test
-            # print(f"method:BatchImage")
-            # print(f"messages:{messages}")
-        elif video is None and image is None and BatchImage is None:
-            messages = [
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": text},
-                    ],
-                }
-            ]
-            # test
-            # print(f"method:none")
+        if text:
+            content.append({"type": "text", "text": text})
+        messages = [{"role": "user", "content": content}]
         modeltext = processor.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )

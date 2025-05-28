@@ -1,8 +1,7 @@
 import os
-import torch
 import folder_paths
 import numpy as np
-import shutil
+
 from PIL import Image
 from transformers import (
     Qwen2_5_VLForConditionalGeneration,
@@ -54,6 +53,7 @@ class DownloadAndLoadQwen2_5_VLModel:
         Qwen2_5_VL_model = {"model": "", "model_path": ""}
         model_name = model.rsplit("/", 1)[-1]
         model_path = os.path.join(model_directory, model_name)
+
         if not os.path.exists(model_path):
             print(f"Downloading Qwen2.5VL model to: {model_path}")
             from huggingface_hub import snapshot_download
@@ -61,6 +61,7 @@ class DownloadAndLoadQwen2_5_VLModel:
             snapshot_download(
                 repo_id=model, local_dir=model_path, local_dir_use_symlinks=False
             )
+
         if quantization == "4bit":
             quantization_config = BitsAndBytesConfig(
                 load_in_4bit=True,
@@ -71,6 +72,7 @@ class DownloadAndLoadQwen2_5_VLModel:
             )
         else:
             quantization_config = None
+
         Qwen2_5_VL_model["model"] = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             model_path,
             torch_dtype="auto",
@@ -79,6 +81,7 @@ class DownloadAndLoadQwen2_5_VLModel:
             quantization_config=quantization_config,
         )
         Qwen2_5_VL_model["model_path"] = model_path
+
         return (Qwen2_5_VL_model,)
 
 
@@ -152,7 +155,9 @@ class Qwen2_5_VL_Run:
         min_pixels = min_pixels * 28 * 28
         max_pixels = max_pixels * 28 * 28
         total_pixels = total_pixels * 28 * 28
+
         processor = AutoProcessor.from_pretrained(Qwen2_5_VL_model["model_path"])
+
         content = []
         if image is not None:
             num_counts = image.shape[0]
@@ -177,6 +182,7 @@ class Qwen2_5_VL_Run:
                             "max_pixels": max_pixels,
                         }
                     )
+
         if video is not None:
             uri = temp_video(video, seed)
             content.append(
@@ -188,6 +194,7 @@ class Qwen2_5_VL_Run:
                     "total_pixels": total_pixels,
                 }
             )
+
         if BatchImage is not None:
             image_paths = BatchImage
             for path in image_paths:
@@ -199,18 +206,22 @@ class Qwen2_5_VL_Run:
                         "max_pixels": max_pixels,
                     }
                 )
+
         if text:
             content.append({"type": "text", "text": text})
+
         messages = [{"role": "user", "content": content}]
         modeltext = processor.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )
+
         os.environ["FORCE_QWENVL_VIDEO_READER"] = video_decode_method
         from qwen_vl_utils import process_vision_info
 
         image_inputs, video_inputs, video_kwargs = process_vision_info(
             messages, return_video_kwargs=True
         )
+
         inputs = processor(
             text=[modeltext],
             images=image_inputs,
@@ -227,13 +238,13 @@ class Qwen2_5_VL_Run:
             out_ids[len(in_ids) :]
             for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
         ]
+
         output_text = processor.batch_decode(
             generated_ids_trimmed,
             skip_special_tokens=True,
             clean_up_tokenization_spaces=False,
         )
-        # delete_temp_image(seed)
-        # delete_temp_video(seed)
+
         return (output_text,)
 
 
@@ -250,13 +261,16 @@ class BatchImageLoaderToLocalFiles:
     def BatchImageLoaderToLocalFiles(self, **kwargs):
         images = list(kwargs.values())
         image_paths = []
+
         for idx, image in enumerate(images):
             image_path = Path(folder_paths.temp_directory) / f"temp_image_{idx}.png"
             img = Image.fromarray(
                 np.clip(255.0 * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
             )
             img.save(os.path.join(image_path))
+
             image_paths.append(f"file://{image_path.resolve().as_posix()}")
+
         return (image_paths,)
 
 
@@ -267,14 +281,10 @@ def temp_video(video: VideoInput, seed):
         format="mp4",
         codec="h264",
     )
+
     uri = f"{video_path.as_posix()}"
+
     return uri
-
-
-# def delete_temp_video(seed):
-#     video_path = Path(folder_paths.temp_directory) / f"temp_video_{seed}.mp4"
-#     if video_path.exists():
-#         video_path.unlink()
 
 
 def temp_image(image, seed):
@@ -283,6 +293,7 @@ def temp_image(image, seed):
         np.clip(255.0 * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
     )
     img.save(os.path.join(image_path))
+
     uri = f"file://{image_path.as_posix()}"
 
     return uri
@@ -292,6 +303,7 @@ def temp_batch_image(image, num_counts, seed):
     image_batch_path = Path(folder_paths.temp_directory) / "Multiple"
     image_batch_path.mkdir(parents=True, exist_ok=True)
     image_paths = []
+
     for Nth_count in range(num_counts):
         img = Image.fromarray(
             np.clip(255.0 * image[Nth_count].cpu().numpy().squeeze(), 0, 255).astype(
@@ -300,19 +312,10 @@ def temp_batch_image(image, num_counts, seed):
         )
         image_path = image_batch_path / f"temp_image_{seed}_{Nth_count}.png"
         img.save(os.path.join(image_path))
+
         image_paths.append(f"file://{image_path.resolve().as_posix()}")
+
     return image_paths
-
-
-# def delete_temp_image(seed):
-#     image_path = Path(folder_paths.temp_directory) / f"temp_image_{seed}.png"
-#     multiple_image_path = Path(folder_paths.temp_directory) / "Multiple"
-#     if image_path.exists():
-#         image_path.unlink()
-#     try:
-#         shutil.rmtree(multiple_image_path)
-#     except FileNotFoundError:
-#         pass
 
 
 NODE_CLASS_MAPPINGS = {
@@ -320,6 +323,7 @@ NODE_CLASS_MAPPINGS = {
     "Qwen2_5_VL_Run": Qwen2_5_VL_Run,
     "BatchImageLoaderToLocalFiles": BatchImageLoaderToLocalFiles,
 }
+
 NODE_DISPLAY_NAME_MAPPINGS = {
     "DownloadAndLoadQwen2_5_VLModel": "DownloadAndLoadQwen2_5_VLModel",
     "Qwen2_5_VL_Run": "Qwen2_5_VL_Run",

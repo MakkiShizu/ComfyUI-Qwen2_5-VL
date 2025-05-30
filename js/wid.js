@@ -58,7 +58,7 @@ export const dynamic_connection = (
 };
 
 app.registerExtension({
-  name: ["BatchImageLoaderToLocalFiles.image"],
+  name: ["ComfyUI-Qwen2_5-VL.BatchImageLoaderToLocalFiles.image"],
 
   async beforeRegisterNodeDef(nodeType, nodeData, app) {
     switch (nodeData.name) {

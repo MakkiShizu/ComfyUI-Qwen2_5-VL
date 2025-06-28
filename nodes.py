@@ -245,7 +245,175 @@ class Qwen2_5_VL_Run:
             clean_up_tokenization_spaces=False,
         )
 
-        return (output_text,)
+        return (str(output_text),)
+
+
+class Qwen2_5_VL_Run_Advanced:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "optional": {
+                "image": ("IMAGE",),
+                "video": ("VIDEO",),
+                "BatchImage": ("BatchImage",),
+            },
+            "required": {
+                "system_text": ("STRING", {"default": "", "multiline": True}),
+                "text": ("STRING", {"default": "", "multiline": True}),
+                "Qwen2_5_VL_model": ("QWEN2_5_VL_MODEL",),
+                "video_decode_method": (
+                    ["torchvision", "decord", "torchcodec"],
+                    {"default": "torchvision"},
+                ),
+                "max_new_tokens": ("INT", {"default": 128, "min": 1, "max": 1024}),
+                "min_pixels": (
+                    "INT",
+                    {
+                        "default": 256,
+                        "min": 64,
+                        "max": 1280,
+                        "tooltip": "Define min_pixels and max_pixels: Images will be resized to maintain their aspect ratio within the range of min_pixels and max_pixels.",
+                    },
+                ),
+                "max_pixels": (
+                    "INT",
+                    {
+                        "default": 1280,
+                        "min": 64,
+                        "max": 2048,
+                        "tooltip": "Define min_pixels and max_pixels: Images will be resized to maintain their aspect ratio within the range of min_pixels and max_pixels.",
+                    },
+                ),
+                "total_pixels": (
+                    "INT",
+                    {
+                        "default": 20480,
+                        "min": 1,
+                        "max": 24576,
+                        "tooltip": "We recommend setting appropriate values for the min_pixels and max_pixels parameters based on available GPU memory and the specific application scenario to restrict the resolution of individual frames in the video. Alternatively, you can use the total_pixels parameter to limit the total number of tokens in the video (it is recommended to set this value below 24576 * 28 * 28 to avoid excessively long input sequences). For more details on parameter usage and processing logic, please refer to the fetch_video function in qwen_vl_utils/vision_process.py.",
+                    },
+                ),
+                "seed": ("INT", {"default": 1, "min": 1, "max": 0xFFFFFFFFFFFFFFFF}),
+            },
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("text",)
+    FUNCTION = "Qwen2_5_VL_Run_Advanced"
+    CATEGORY = "Qwen2_5-VL"
+
+    def Qwen2_5_VL_Run_Advanced(
+        self,
+        system_text,
+        text,
+        Qwen2_5_VL_model,
+        video_decode_method,
+        max_new_tokens,
+        min_pixels,
+        max_pixels,
+        total_pixels,
+        seed,
+        image=None,
+        video=None,
+        BatchImage=None,
+    ):
+        min_pixels = min_pixels * 28 * 28
+        max_pixels = max_pixels * 28 * 28
+        total_pixels = total_pixels * 28 * 28
+
+        processor = AutoProcessor.from_pretrained(Qwen2_5_VL_model["model_path"])
+
+        content = []
+        if image is not None:
+            num_counts = image.shape[0]
+            if num_counts == 1:
+                uri = temp_image(image, seed)
+                content.append(
+                    {
+                        "type": "image",
+                        "image": uri,
+                        "min_pixels": min_pixels,
+                        "max_pixels": max_pixels,
+                    }
+                )
+            elif num_counts > 1:
+                image_paths = temp_batch_image(image, num_counts, seed)
+                for path in image_paths:
+                    content.append(
+                        {
+                            "type": "image",
+                            "image": path,
+                            "min_pixels": min_pixels,
+                            "max_pixels": max_pixels,
+                        }
+                    )
+
+        if video is not None:
+            uri = temp_video(video, seed)
+            content.append(
+                {
+                    "type": "video",
+                    "video": uri,
+                    "min_pixels": min_pixels,
+                    "max_pixels": max_pixels,
+                    "total_pixels": total_pixels,
+                }
+            )
+
+        if BatchImage is not None:
+            image_paths = BatchImage
+            for path in image_paths:
+                content.append(
+                    {
+                        "type": "image",
+                        "image": path,
+                        "min_pixels": min_pixels,
+                        "max_pixels": max_pixels,
+                    }
+                )
+
+        if text:
+            content.append({"type": "text", "text": text})
+
+        messages = [
+            {"role": "system", "content": system_text},
+            {"role": "user", "content": content},
+        ]
+        modeltext = processor.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
+
+        os.environ["FORCE_QWENVL_VIDEO_READER"] = video_decode_method
+        from qwen_vl_utils import process_vision_info
+
+        image_inputs, video_inputs, video_kwargs = process_vision_info(
+            messages, return_video_kwargs=True
+        )
+
+        inputs = processor(
+            text=[modeltext],
+            images=image_inputs,
+            videos=video_inputs,
+            padding=True,
+            return_tensors="pt",
+            **video_kwargs,
+        )
+        inputs = inputs.to(Qwen2_5_VL_model["model"].device)
+        generated_ids = Qwen2_5_VL_model["model"].generate(
+            **inputs, max_new_tokens=max_new_tokens
+        )
+        generated_ids_trimmed = [
+            out_ids[len(in_ids) :]
+            for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+        ]
+
+        output_text = processor.batch_decode(
+            generated_ids_trimmed,
+            skip_special_tokens=True,
+            clean_up_tokenization_spaces=False,
+        )
+
+        return (str(output_text),)
 
 
 class BatchImageLoaderToLocalFiles:
@@ -321,11 +489,13 @@ def temp_batch_image(image, num_counts, seed):
 NODE_CLASS_MAPPINGS = {
     "DownloadAndLoadQwen2_5_VLModel": DownloadAndLoadQwen2_5_VLModel,
     "Qwen2_5_VL_Run": Qwen2_5_VL_Run,
+    "Qwen2_5_VL_Run_Advanced": Qwen2_5_VL_Run_Advanced,
     "BatchImageLoaderToLocalFiles": BatchImageLoaderToLocalFiles,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "DownloadAndLoadQwen2_5_VLModel": "DownloadAndLoadQwen2_5_VLModel",
     "Qwen2_5_VL_Run": "Qwen2_5_VL_Run",
+    "Qwen2_5_VL_Run_Advanced": "Qwen2_5_VL_Run_Advanced",
     "BatchImageLoaderToLocalFiles": "BatchImageLoaderToLocalFiles",
 }

@@ -436,6 +436,7 @@ class BatchImageLoaderToLocalFiles:
             image_path = (
                 Path(folder_paths.temp_directory) / f"temp_image_{idx}_{unique_id}.png"
             )
+            image_path.parent.mkdir(parents=True, exist_ok=True)
             img = Image.fromarray(
                 np.clip(255.0 * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
             )
@@ -451,6 +452,7 @@ def temp_video(video: VideoInput, seed):
     video_path = (
         Path(folder_paths.temp_directory) / f"temp_video_{seed}_{unique_id}.mp4"
     )
+    video_path.parent.mkdir(parents=True, exist_ok=True)
     video.save_to(
         os.path.join(video_path),
         format="mp4",
@@ -467,6 +469,7 @@ def temp_image(image, seed):
     image_path = (
         Path(folder_paths.temp_directory) / f"temp_image_{seed}_{unique_id}.png"
     )
+    image_path.parent.mkdir(parents=True, exist_ok=True)
     img = Image.fromarray(
         np.clip(255.0 * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
     )

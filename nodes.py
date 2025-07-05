@@ -475,7 +475,6 @@ def temp_image(image, seed):
 
 
 def temp_batch_image(image, num_counts, seed):
-    unique_id = uuid.uuid4().hex
     image_batch_path = Path(folder_paths.temp_directory) / "Multiple"
     image_batch_path.mkdir(parents=True, exist_ok=True)
     image_paths = []
@@ -486,6 +485,7 @@ def temp_batch_image(image, num_counts, seed):
                 np.uint8
             )
         )
+        unique_id = uuid.uuid4().hex
         image_path = image_batch_path / f"temp_image_{seed}_{Nth_count}_{unique_id}.png"
         img.save(os.path.join(image_path))
 

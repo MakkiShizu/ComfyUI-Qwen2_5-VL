@@ -1,4 +1,5 @@
 import os
+import uuid
 import folder_paths
 import numpy as np
 
@@ -443,7 +444,10 @@ class BatchImageLoaderToLocalFiles:
 
 
 def temp_video(video: VideoInput, seed):
-    video_path = Path(folder_paths.temp_directory) / f"temp_video_{seed}.mp4"
+    unique_id = uuid.uuid4().hex
+    video_path = (
+        Path(folder_paths.temp_directory) / f"temp_video_{seed}_{unique_id}.mp4"
+    )
     video.save_to(
         os.path.join(video_path),
         format="mp4",
@@ -456,7 +460,10 @@ def temp_video(video: VideoInput, seed):
 
 
 def temp_image(image, seed):
-    image_path = Path(folder_paths.temp_directory) / f"temp_image_{seed}.png"
+    unique_id = uuid.uuid4().hex
+    image_path = (
+        Path(folder_paths.temp_directory) / f"temp_image_{seed}_{unique_id}.png"
+    )
     img = Image.fromarray(
         np.clip(255.0 * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
     )
@@ -468,6 +475,7 @@ def temp_image(image, seed):
 
 
 def temp_batch_image(image, num_counts, seed):
+    unique_id = uuid.uuid4().hex
     image_batch_path = Path(folder_paths.temp_directory) / "Multiple"
     image_batch_path.mkdir(parents=True, exist_ok=True)
     image_paths = []
@@ -478,7 +486,7 @@ def temp_batch_image(image, num_counts, seed):
                 np.uint8
             )
         )
-        image_path = image_batch_path / f"temp_image_{seed}_{Nth_count}.png"
+        image_path = image_batch_path / f"temp_image_{seed}_{Nth_count}_{unique_id}.png"
         img.save(os.path.join(image_path))
 
         image_paths.append(f"file://{image_path.resolve().as_posix()}")

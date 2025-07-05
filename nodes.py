@@ -432,7 +432,10 @@ class BatchImageLoaderToLocalFiles:
         image_paths = []
 
         for idx, image in enumerate(images):
-            image_path = Path(folder_paths.temp_directory) / f"temp_image_{idx}.png"
+            unique_id = uuid.uuid4().hex
+            image_path = (
+                Path(folder_paths.temp_directory) / f"temp_image_{idx}_{unique_id}.png"
+            )
             img = Image.fromarray(
                 np.clip(255.0 * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)
             )

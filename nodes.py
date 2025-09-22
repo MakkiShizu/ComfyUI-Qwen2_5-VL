@@ -246,7 +246,7 @@ class Qwen2_5_VL_Run:
             clean_up_tokenization_spaces=False,
         )
 
-        return (str(output_text),)
+        return (str(output_text[0]),)
 
 
 class Qwen2_5_VL_Run_Advanced:
@@ -414,7 +414,7 @@ class Qwen2_5_VL_Run_Advanced:
             clean_up_tokenization_spaces=False,
         )
 
-        return (str(output_text),)
+        return (str(output_text[0]),)
 
 
 class BatchImageLoaderToLocalFiles:
